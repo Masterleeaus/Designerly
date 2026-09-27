@@ -1,200 +1,179 @@
-<p align="center">
-    <h2 align="center"> 
-        FilamentPHP Tenant Based in Organization/Company (<b>Single Database</b>)
-    </h2>
-</p>
+# TenantForge
 
-## About this Project
+**A production-oriented multi-tenant SaaS foundation for Laravel with tenant isolation, subscription billing, administration and operational workflows.**
 
-An example project demonstrating a MultiTenant <b>Single Database</b> system fully built in Laravel and Filament, integrated with Stripe for Subscription management. The system includes the following features:
+TenantForge is a Laravel and Filament application foundation for building organisation-based SaaS products on a shared database architecture. It brings together tenant lifecycle management, Stripe-backed subscription operations, feature-aware plans, administration, support workflows and containerised local infrastructure in one codebase.
 
-1. Creation of Plans, Prices, and Features stored in the database and integrated via the Stripe API.
-2. Admin Panel for Managing Tenants and Subscriptions.
-3. API-based Client Creation when registering the Tenant
-4. Modal for Tenant to choose Plans and Complete the Subscription (Stripe Management)
-5. Feature for Tenant to create tickets for the Tenant's manager.
-6. Profile editing with theme color customization.
-7. Integration of Icons with FontAwesome.
-8. Tested and working with MySQL and Postgresql
+> **Project provenance:** TenantForge is a derivative development based on the open-source `wallacemartinss/core_tenant` project. The upstream foundation and its original author, Wallace Martins, are credited below. This repository preserves that provenance while developing the system under a distinct technical identity.
 
-## Videos:
+## What the system demonstrates
 
-1. See Video - Administrative panel presentation
+The codebase provides working examples of several concerns that commonly have to be coordinated in a SaaS backend:
 
-[video](https://youtu.be/mjXOp9EMKj4)
+- organisation/company tenant management in a single database;
+- separate administrative and tenant-facing Filament surfaces;
+- Stripe customer, product, price, subscription, coupon and refund workflows;
+- plan and feature modelling;
+- tenant registration and account provisioning;
+- support-ticket workflows with typed status, priority and category states;
+- profile and theme customisation;
+- queue/job monitoring;
+- Docker-based application infrastructure;
+- MySQL and PostgreSQL-oriented configuration;
+- Laravel authentication and application services.
 
-2. See Video - Creation of Products, prices and Features
+## Architecture
 
-[video](https://youtu.be/52wDWiFtNxw)
+```text
+                         TenantForge
+                              |
+              +---------------+---------------+
+              |                               |
+       Administration                    Tenant Surface
+              |                               |
+     +--------+---------+            +--------+---------+
+     |        |         |            |        |         |
+  Tenants   Plans    Billing      Profile  Support   Features
+     |        |         |            |        |         |
+     +--------+---------+------------+--------+---------+
+                              |
+                       Laravel Domain Layer
+                              |
+              +---------------+---------------+
+              |                               |
+        Stripe / Cashier                Shared SQL DB
+              |                               |
+        subscriptions,                 tenant-scoped
+        prices, refunds                 application data
+                              |
+                    Docker / Queue Runtime
+```
 
-3. See Video - Registering a new tenant
+The project uses a shared-database tenancy model rather than one database per customer. Application code is therefore responsible for maintaining tenant-aware data boundaries.
 
-[video](https://youtu.be/LJdqvMkynlU)
+## Core workflows
 
-## The plugins used in this project may include:
+### Tenant onboarding
 
--   [laravel](https://github.com/laravel/framework)
--   [Filament](https://github.com/filamentphp/filament)
--   [FontAwesome](https://v2.filamentphp.com/tricks/use-font-awesome-or-any-other-icon-set)
--   [Brazilian Form Fields](https://filamentphp.com/plugins/leandrocfe-brazilian-form-fields)
--   [Edit Profile](https://filamentphp.com/plugins/joaopaulolndev-edit-profile)
--   [Spatie Laravel Backup](https://filamentphp.com/plugins/shuvroroy-spatie-laravel-backup)
+```text
+Registration
+    -> tenant/company creation
+    -> account provisioning
+    -> Stripe customer integration
+    -> plan selection
+    -> subscription lifecycle
+    -> tenant application access
+```
 
-## Prerequisites
+### Subscription operations
 
-1. Create a Stripe account and enable trial mode - [Stripe](https://stripe.com/)
+Administrators can model products, prices and features while the tenant-facing workflow connects account selection to Stripe subscription management. The repository also contains typed enums and application logic for subscription state, cancellation, promotion and refund handling.
 
-2. Docker and docker-compose (The Dockerfile for this project already includes all the necessary resources to run the project.)
+### Support operations
 
-## Dockerfile includes the following functionalities:
+Tenant support is represented as an application workflow rather than an external placeholder. Ticket priority, status and type are explicit domain states and are exposed through the Filament application surfaces.
 
-1. The Docker File include all resources for execute this project.
+## Technology
 
-## Installation
+| Layer | Technology |
+| --- | --- |
+| Backend | PHP 8.2+, Laravel 11 |
+| Admin/application UI | Filament 3 |
+| Authentication | Laravel Fortify |
+| Billing | Laravel Cashier + Stripe PHP SDK |
+| Databases | MySQL / PostgreSQL |
+| Containers | Docker / Docker Compose |
+| Testing | PHPUnit |
+| Code quality | Laravel Pint, CaptainHook |
+| Frontend toolchain | Vite / Node.js |
 
-1. Clone the repository
+## Repository structure
+
+```text
+app/                Laravel application and domain code
+bootstrap/          Framework bootstrap
+config/             Runtime and integration configuration
+database/           Migrations, factories and seeders
+resources/          Application views and frontend resources
+routes/             HTTP/application routes
+storage/            Runtime storage structure
+tests/              Automated tests
+Dockerfile*         Container definitions
+docker-compose.yml  Local service orchestration
+```
+
+## Getting started
+
+### Requirements
+
+- PHP 8.2+
+- Composer
+- Node.js / npm
+- Docker and Docker Compose for the containerised workflow
+- a Stripe test account for billing functionality
+
+### Install
 
 ```bash
-
-git clone https://github.com/wallacemartinss/core_tenant.git
-cd core_tenant
-
-```
-
-```bash
-
-laravel new core_tenant --using=wallacemartinss/core_tenant
-cd core_tenant
-
-```
-
-2. Copy .ENV file
-
-```bash
-
-cp .env.example .env
-
-```
-
-3. Configure your database in `.env`:
-
-```
-
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=db_coretenant_system
-DB_USERNAME=your_username
-DB_PASSWORD=your_password
-
-```
-
-4. Configure Stripe keys in `.env`
-
-```
-
-STRIPE_KEY=your_stripe_key
-STRIPE_SECRET=your_stripe_secret
-
-
-```
-
-5. Run Docker
-
-```bash
-
-docker compose up -d
-
-```
-
-6. Access docker App container
-
-```bash
-
-docker compose exec app bash
-
-```
-
-7. Inside the container, Install PHP dependencies
-
-```bash
-
+git clone https://github.com/Masterleeaus/Designerly.git
+cd Designerly
 composer install
-
-```
-
-8. Inside the container, configure environment variables
-
-```bash
-
+cp .env.example .env
 php artisan key:generate
-
+npm install
+npm run build
 ```
 
-9. Inside the container, Run migrations and seeders
+Configure the database and Stripe **test** credentials in `.env`, then initialise the application:
 
 ```bash
-
 php artisan migrate --seed
-
-```
-
-10. Inside the container, Link storage for file uploads
-
-```bash
-
 php artisan storage:link
-
+php artisan serve
 ```
 
-11. Inside the container run the command below (To Listen Webhook stripe events) Ip 172.17.0.1 It is the default gateway for containers to communicate with the host.
+Alternatively, use the included Docker Compose environment:
 
 ```bash
-
-stripe listen --forward-to http://172.17.0.1/stripe/webhook
-
+docker compose up -d
 ```
 
-12. The first time you run it, it will generate your webhook key. copy and paste it into your env file.
+For local Stripe webhook testing, configure the Stripe CLI to forward events to the application's `/stripe/webhook` endpoint and place the generated webhook secret in the environment configuration.
 
-```
-STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret
+## Engineering notes
 
-```
+### Tenant boundaries
 
-## Tips
+A shared database simplifies deployment and cross-tenant platform administration but makes tenant scoping a critical application invariant. Any extension to the system should preserve tenant ownership checks at query and action boundaries.
 
-When a user is registered (new tenant) they are asked to validate their email. use the address below to access the mailpit
+### Billing boundaries
 
-http://localhost:8025/
+Stripe remains the external payment authority. Local records should be treated as application projections of billing state rather than a substitute source of truth for payment events.
 
-## Contributing
+### Configuration and secrets
 
-1. Fork the repository
-2. Create your feature changes in your branch
-3. Commit your changes
-4. Push to the branch
-5. Open a Pull Request
+Do not commit real database credentials, Stripe secrets or webhook signing secrets. Use `.env.example` only as a configuration contract and keep runtime secrets outside source control.
 
-## Security
+## Limitations
 
-If you discover any security-related issues, please email wallacemartinss@gmail.com instead of using the issue tracker.
+TenantForge is an engineering foundation, not a finished vertical SaaS product. Production deployment requires environment-specific security review, backup/restore policy, monitoring, rate limiting, tenant-isolation testing and payment-flow validation.
+
+The repository demonstrates application architecture and integration patterns; it does not claim PCI certification or guarantee that a deployment is secure solely because it uses this codebase.
+
+## Status
+
+**Active technical foundation.** The current implementation is suitable for experimentation and continued development of organisation-based SaaS applications.
+
+## Provenance and attribution
+
+This repository is derived from the MIT-licensed `wallacemartinss/core_tenant` project by **Wallace Martins**. Upstream architecture and code remain subject to their original license and attribution requirements. Subsequent development and the TenantForge project identity are maintained by **Jason Lee / @Masterleeaus**.
+
+The provenance statement is intentionally retained so that downstream users can distinguish upstream work from subsequent development.
+
+## Author / maintainer
+
+**Jason Lee** — [@Masterleeaus](https://github.com/Masterleeaus)
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
-
-## Credits
-
--   [Wallace Martins](https://github.com/wallacemartinss)
--   [All Contributors](../../contributors)
-
-## Support
-
-For support, please email wallacemartinss@gmail.com or create an issue in the GitHub repository.
-
-<br>
-    <h4 align="center"> 
-        🚧  Project 🚀 under construction...  🚧
-    </h4>
-<br>
+Retain the upstream MIT license and all legally required attribution when redistributing derivative source code.

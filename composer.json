@@ -1,9 +1,9 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "wallacemartinss/core_tenant",
+    "name": "masterleeaus/tenantforge",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "description": "Multi-tenant Laravel SaaS foundation with Filament administration and Stripe subscription workflows.",
+    "keywords": ["laravel", "filament", "multi-tenant", "saas", "stripe", "subscriptions", "docker"],
     "license": "MIT",
     "require": {
         "php": "^8.2",

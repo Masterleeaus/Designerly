@@ -8,6 +8,13 @@ TenantForge is a Laravel and Filament application foundation for building organi
 
 > **Project provenance:** TenantForge is a derivative development based on the open-source `wallacemartinss/core_tenant` project. The upstream foundation and its original author, Wallace Martins, are credited below. This repository preserves that provenance while developing the system under a distinct technical identity.
 
+## Product architecture and engineering highlights
+
+A multi-tenant SaaS foundation for Laravel applications that need tenant onboarding, subscription billing, support, and administration.
+
+- **Architecture:** A shared-database tenancy model layers organisation lifecycle, tenant-aware application access, Filament administration, Stripe subscription workflows, and container-oriented local infrastructure.
+- **Distinctive engineering:** The core engineering challenge is maintaining tenant boundaries across identity, data access, plan entitlements, billing events, and support operations; upstream foundation attribution is retained.
+
 ## What the system demonstrates
 
 The codebase provides working examples of several concerns that commonly have to be coordinated in a SaaS backend:

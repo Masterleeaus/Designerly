@@ -1,3 +1,5 @@
+![TenantForge SaaS Foundation — MULTI-TENANT LARAVEL FOUNDATION](docs/images/portfolio-banner.svg)
+
 # TenantForge
 
 **A production-oriented multi-tenant SaaS foundation for Laravel with tenant isolation, subscription billing, administration and operational workflows.**
